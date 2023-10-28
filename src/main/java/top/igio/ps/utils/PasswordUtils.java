@@ -3,6 +3,7 @@ package top.igio.ps.utils;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author ljl
@@ -12,21 +13,17 @@ import cn.hutool.crypto.symmetric.SymmetricCrypto;
  */
 public class PasswordUtils {
 
-    private static final String AES_KEY = "[B@35ef439e";
+    private final PasswordEncoder passwordEncoder;
 
-    private PasswordUtils() {
-
+    public PasswordUtils(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public static String encrypt(String password) {
-        SymmetricCrypto aes = new SymmetricCrypto("AES", AES_KEY.getBytes());
-        byte[] encryptBytes = aes.encrypt(password);
-        return StrUtil.str(encryptBytes, CharsetUtil.CHARSET_UTF_8);
+    public String encrypt(String password) {
+        return passwordEncoder.encode(password);
     }
 
-    public static String decrypt(String password) {
-        SymmetricCrypto aes = new SymmetricCrypto("AES", AES_KEY.getBytes());
-        byte[] decryptBytes = aes.decrypt(password);
-        return StrUtil.str(decryptBytes, CharsetUtil.CHARSET_UTF_8);
+    public boolean matches(String password, String encodedPassword) {
+        return passwordEncoder.matches(password, encodedPassword);
     }
 }
